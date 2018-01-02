@@ -34,7 +34,7 @@ class PhotoOrganizer
   def find_files_and_do(dir, handler)
     Find.find(dir) do |path|
       next if FileTest.directory?(path)
-      unless (File.basename(path).match(/^[^.].+?\.(jpg|mov|png)$/i))
+      unless (File.basename(path).match(/^[^.].+?\.(jpg|png|mov|mp4)$/i))
         warn "un-supported file: #{self.path_short(path)}"
         next
       end
@@ -46,7 +46,8 @@ class PhotoOrganizer
     ext_def = {
       JPEG: { ext:"jpg", dir:"photos/" },
       PNG:  { ext:"png", dir:"photos/" },
-      MOV:  { ext:"mov", dir:"movies/" }
+      MOV:  { ext:"mov", dir:"movies/" },
+      MP4:  { ext:"mp4", dir:"movies/" }
     }
     ed = ext_def[exif[:type].to_sym]
     unless ed
@@ -60,8 +61,7 @@ class PhotoOrganizer
   def copy_file_from_to(from_path, to_path)
     FileUtils.mkdir_p(to_path.dirname) unless to_path.dirname.directory?
     if to_path.exist?
-      warn "fil already exists: #{to_path}"
-      return
+      to_path = Pathname.new to_path.to_s.gsub(/(\.\w+)$/, "-#{Time.now.strftime('%3L')}\\1")
     end
     FileUtils.copy_file(from_path, to_path)
     puts "copied: #{self.path_short(to_path)}"
