@@ -18,6 +18,9 @@ class PhotoOrganizer
       exit
     end
 
+    puts "dir from: #{self.path_short(@in_dir)}"
+    puts "dir to:   #{self.path_short(@out_dir_base)}"
+
     handler = ->(file) do
       ex = ExifParser.get_info(file)
       to_path = self.build_copy_to_path(ex)
@@ -31,7 +34,7 @@ class PhotoOrganizer
   def find_files_and_do(dir, handler)
     Find.find(dir) do |path|
       next if FileTest.directory?(path)
-      unless (File.basename(path).match(/^[^.].+?\.(jpg|mov)$/i))
+      unless (File.basename(path).match(/^[^.].+?\.(jpg|mov|png)$/i))
         warn "un-supported file: #{self.path_short(path)}"
         next
       end
@@ -42,6 +45,7 @@ class PhotoOrganizer
   def build_copy_to_path(exif)
     ext_def = {
       JPEG: { ext:"jpg", dir:"photos/" },
+      PNG:  { ext:"png", dir:"photos/" },
       MOV:  { ext:"mov", dir:"movies/" }
     }
     ed = ext_def[exif[:type].to_sym]
