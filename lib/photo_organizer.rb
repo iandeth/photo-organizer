@@ -34,7 +34,7 @@ class PhotoOrganizer
   def find_files_and_do(dir, handler)
     Find.find(dir) do |path|
       next if FileTest.directory?(path)
-      unless (File.basename(path).match(/^[^.].+?\.(jpg|png|mov|mp4)$/i))
+      unless (File.basename(path).match(/^[^.].+?\.(jpg|png|mov|mp4|heic)$/i))
         warn "un-supported file: #{self.path_short(path)}"
         next
       end
@@ -46,6 +46,7 @@ class PhotoOrganizer
     ext_def = {
       JPEG: { ext:"jpg", dir:"photos/" },
       PNG:  { ext:"png", dir:"photos/" },
+      HEIC: { ext:"heic", dir:"photos/" },
       MOV:  { ext:"mov", dir:"movies/" },
       MP4:  { ext:"mp4", dir:"movies/" }
     }
